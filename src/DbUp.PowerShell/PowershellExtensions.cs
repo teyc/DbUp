@@ -10,7 +10,7 @@ namespace DbUp.PowerShell
             return builder.WithScripts(new PowerShellFileSystemScriptProvider(path));
         }
 
-        public static UpgradeEngineBuilder Powershell(this SupportedDatabases supported)
+        public static UpgradeEngineBuilder PowerShell(this SupportedDatabases supported)
         {
             var builder = new UpgradeEngineBuilder();
             builder.Configure(c => c.ScriptExecutor = new PowerShellScriptExecutor(() => c.Log, () => c.ConnectionManager));

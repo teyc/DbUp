@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DbUp.Engine;
 using DbUp.Engine.Output;
 using DbUp.Engine.Transactions;
@@ -27,7 +28,7 @@ namespace DbUp.PowerShell
         {
             var log = upgradeLogFactory();
 
-            log.WriteInformation("Executing Powershell script '{0}'", script.Name);
+            log.WriteInformation("Executing PowerShell script '{0}'", script.Name);
 
             var contents = script.Contents;
 
@@ -35,17 +36,14 @@ namespace DbUp.PowerShell
             var scriptStatements = connectionManager.SplitScriptIntoCommands(contents);
             var index = -1;
 
-            using (var powershell = PowerShell.Create())
+            using (var powershell = System.Management.Automation.PowerShell.Create())
             {
-                foreach (var scriptStatement in scriptStatements)
+                scriptStatements.ToList().ForEach(_ => powershell.Commands.AddScript(_));
+                
+                var output = powershell.Invoke();
+                foreach (var psObject in output)
                 {
-                    powershell.Commands.Clear();
-                    powershell.Commands.AddScript(scriptStatement);
-                    var output = powershell.Invoke();
-                    foreach (var psObject in output)
-                    {
-                        log.WriteInformation(psObject.ToString());
-                    }
+                    log.WriteInformation(psObject.ToString());
                 }
             }
         }

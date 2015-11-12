@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using DbUp.Engine;
 
 namespace DbUp.PowerShell
@@ -17,7 +18,7 @@ namespace DbUp.PowerShell
         {
             CreateDirectory();
 
-            return Directory.GetFileSystemEntries(directoryPath);
+            return Directory.GetFiles(directoryPath).Select(Path.GetFileName).ToArray();
         }
 
         public void StoreExecutedScript(SqlScript script)

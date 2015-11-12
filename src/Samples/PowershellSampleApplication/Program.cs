@@ -10,9 +10,9 @@ namespace PowershellSampleApplication
         static void Main()
         {
             var upgradeEngine = DeployChanges.To
-                .Powershell()
+                .PowerShell()
                 .JournalTo(new FileSystemJournal("SchemaVersions"))
-                .LogToConsole()
+                .LogToConsole()                
                 .WithPowerShellScriptsFromFileSystem("Scripts")
                 .Build();
 
