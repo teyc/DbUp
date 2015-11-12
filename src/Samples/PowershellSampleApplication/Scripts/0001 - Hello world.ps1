@@ -8,3 +8,6 @@ else
 {
 	Write-Output "SchemaVersions directory missing"
 }
+
+Write-Error "Error"
+

@@ -37,7 +37,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbUp.MySql", "DbUp.MySql\Db
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbUp.SQLite.Mono", "DbUp.SQLite.Mono\DbUp.SQLite.Mono.csproj", "{5C474B5C-019C-4C03-9E20-2D0CDEAAEA7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowershellSampleApplication", "Samples\PowershellSampleApplication\PowershellSampleApplication.csproj", "{07DCBBA8-B536-4571-BE17-C4D087FAC59A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerShellSampleApplication", "Samples\PowershellSampleApplication\PowerShellSampleApplication.csproj", "{07DCBBA8-B536-4571-BE17-C4D087FAC59A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbUp.PowerShell", "DbUp.PowerShell\DbUp.PowerShell.csproj", "{51D693E6-E67D-49A0-8D80-C854F95B046A}"
 EndProject

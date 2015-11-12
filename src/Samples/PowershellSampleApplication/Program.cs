@@ -3,7 +3,7 @@ using System.Diagnostics;
 using DbUp;
 using DbUp.PowerShell;
 
-namespace PowershellSampleApplication
+namespace PowerShellSampleApplication
 {
     class Program
     {
