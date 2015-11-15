@@ -53,6 +53,7 @@ namespace DbUp.Console
             var dbup = DeployChanges.To
                 .SqlDatabase(connectionString)
                 .LogToConsole()
+                .WithExecutionTimeout(TimeSpan.Zero)
                 .WithScriptsFromFileSystem(directory)
                 .Build();
 

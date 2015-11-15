@@ -76,7 +76,9 @@
     <Compile Include="Engine\Transactions\TransactionPerScriptStrategy.cs" />
     <Compile Include="Helpers\Filters.cs" />
     <Compile Include="Helpers\NullJournal.cs" />
+    <Compile Include="RestoreDatabase.cs" />
     <Compile Include="ScriptProviders\EmbeddedScriptsProvider.cs" />
+    <Compile Include="SupportedDatabasesForRestoreDatabase.cs" />
     <Compile Include="SupportedDatabasesForEnsureDatabase.cs" />
     <Compile Include="Support\Firebird\FirebirdTableJournal.cs" />
     <Compile Include="Support\MySql\MySqlITableJournal.cs" />
@@ -94,6 +96,7 @@
     <Compile Include="Support\ObjectNameOptions.cs" />
     <Compile Include="Support\SQLite\SQLiteObjectParser.cs" />
     <Compile Include="Support\SQLite\SQLiteTableJournal.cs" />
+    <Compile Include="Support\SqlServer\SqlDatabaseRestorer.cs" />
     <Compile Include="Support\SqlServer\SqlObjectParser.cs" />
     <Compile Include="Support\SqlServer\SqlScriptExecutor.cs" />
     <Compile Include="Engine\IScriptPreprocessor.cs" />

@@ -132,25 +132,10 @@ public static class SqlServerExtensions
 
         if (logger == null) throw new ArgumentNullException("logger");
 
-        var masterConnectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
+        string databaseName;
+        var masterConnectionString = GetMasterConnectionString(out databaseName, connectionString, logger);
 
-        var databaseName = masterConnectionStringBuilder.InitialCatalog;
-
-        if (string.IsNullOrEmpty(databaseName) || databaseName.Trim() == string.Empty)
-        {
-            throw new InvalidOperationException("The connection string does not specify a database name.");
-        }
-
-        masterConnectionStringBuilder.InitialCatalog = "master";
-
-        var logMasterConnectionStringBuilder = new SqlConnectionStringBuilder(masterConnectionStringBuilder.ConnectionString)
-        {
-            Password = String.Empty.PadRight(masterConnectionStringBuilder.Password.Length,'*')
-        };
-        
-        logger.WriteInformation("Master ConnectionString => {0}", logMasterConnectionStringBuilder.ConnectionString);
-
-        using (var connection = new SqlConnection(masterConnectionStringBuilder.ConnectionString))
+        using (var connection = new SqlConnection(masterConnectionString))
         {
             connection.Open();
             
@@ -193,5 +178,63 @@ public static class SqlServerExtensions
         }
     }
 
+    private static string GetMasterConnectionString(out string databaseName, string connectionString, IUpgradeLog logger)
+    {
+        var masterConnectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
+
+        databaseName = masterConnectionStringBuilder.InitialCatalog;
+
+        if (string.IsNullOrEmpty(databaseName) || databaseName.Trim() == string.Empty)
+        {
+            throw new InvalidOperationException("The connection string does not specify a database name.");
+        }
+
+        masterConnectionStringBuilder.InitialCatalog = "master";
+
+        var masterConnectionString = masterConnectionStringBuilder.ConnectionString;
+
+        var logMasterConnectionStringBuilder = new SqlConnectionStringBuilder(masterConnectionString)
+        {
+            Password = String.Empty.PadRight(masterConnectionStringBuilder.Password.Length, '*')
+        };
+
+        logger.WriteInformation("Master ConnectionString => {0}", logMasterConnectionStringBuilder.ConnectionString);
+        return masterConnectionString;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="supported"></param>
+    /// <param name="connectionString"></param>
+    /// <param name="backupFilePath"></param>
+    public static void SqlDatabase(this SupportedDatabasesForRestoreDatabase supported, string connectionString, string backupFilePath, bool overwrite)
+    {
+        SqlDatabase(supported, connectionString, backupFilePath, overwrite, new ConsoleUpgradeLog());
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="supported"></param>
+    /// <param name="connectionString"></param>
+    /// <param name="backupFilePath"></param>
+    /// <param name="overwrite"></param>
+    /// <param name="logger"></param>
+    public static void SqlDatabase(this SupportedDatabasesForRestoreDatabase supported, string connectionString, string backupFilePath, bool overwrite, IUpgradeLog logger)
+    {
+        string databaseName;
+        var masterConnectionString = GetMasterConnectionString(out databaseName, connectionString, logger);
+        if (overwrite)
+        {
+            new SqlDatabaseRestorer()
+                .RestoreFromDiskOverwrite(masterConnectionString, databaseName, backupFilePath);
+        }
+        else
+        {
+            new SqlDatabaseRestorer()
+                .RestoreFromDiskIfAbsent(masterConnectionString, databaseName, backupFilePath);
+        }
+    }
 
 }
