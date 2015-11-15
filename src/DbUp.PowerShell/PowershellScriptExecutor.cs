@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management.Automation;
 using DbUp.Engine;
 using DbUp.Engine.Output;
 using DbUp.Engine.Transactions;
@@ -35,17 +36,45 @@ namespace DbUp.PowerShell
             var connectionManager = connectionManagerFactory();
             var scriptStatements = connectionManager.SplitScriptIntoCommands(contents);
             var index = -1;
-
-            using (var powershell = System.Management.Automation.PowerShell.Create())
+            try
             {
-                scriptStatements.ToList().ForEach(_ => powershell.Commands.AddScript(_));
-                
-                var output = powershell.Invoke();
-                foreach (var psObject in output)
+
+                using (var powershell = System.Management.Automation.PowerShell.Create())
                 {
-                    log.WriteInformation(psObject.ToString());
+                    scriptStatements
+                        .ToList()
+                        .ForEach(_ => powershell.Commands.AddScript(_));
+
+                    powershell.Streams.Error.DataAdding += LogWith(log.WriteError);
+                    powershell.Streams.Debug.DataAdding += LogWith(log.WriteInformation);
+                    powershell.Streams.Warning.DataAdding += LogWith(log.WriteWarning);
+                    powershell.Streams.Verbose.DataAdding += LogWith(log.WriteInformation);
+
+                    var outputStream = new PSDataCollection<PSObject>();
+                    outputStream.DataAdding += LogWith(log.WriteInformation);
+                    powershell.Invoke(null, outputStream);
+
                 }
             }
+            catch (RuntimeException exception)
+            {
+                log.WriteError(exception.ErrorRecord.ToString());
+                throw;
+            }
+        }
+
+        private EventHandler<DataAddingEventArgs> LogWith(Action<string, object[]> log)
+        {
+            return (o, e) =>
+            {
+                var informationalRecord = e.ItemAdded as InformationalRecord;
+                var errorRecord = e.ItemAdded as ErrorRecord;
+                var message = informationalRecord != null ? informationalRecord.Message :
+                    errorRecord != null ? errorRecord.ErrorDetails.Message :
+                    e.ItemAdded.ToString();
+
+                log(message, null);
+            };
         }
 
         public void VerifySchema()

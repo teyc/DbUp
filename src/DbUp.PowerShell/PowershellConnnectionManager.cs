@@ -49,6 +49,12 @@ namespace DbUp.PowerShell
         {
             private readonly IList<string> scriptCommands = new List<string>();
 
+            public override AstVisitAction VisitFunctionDefinition(FunctionDefinitionAst functionDefinitionAst)
+            {
+                scriptCommands.Add(functionDefinitionAst.ToString());
+                return AstVisitAction.SkipChildren;
+            }
+
             public override AstVisitAction VisitIfStatement(IfStatementAst ifStmtAst)
             {
                 scriptCommands.Add(ifStmtAst.ToString());

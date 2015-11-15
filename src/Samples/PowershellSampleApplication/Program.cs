@@ -22,6 +22,9 @@ namespace PowerShellSampleApplication
             {
                 Debugger.Break();
             }
+
+            Console.Out.WriteLine("Press any key to continue...");
+            Console.ReadKey();
         }
     }
 }
